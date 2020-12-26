@@ -17,7 +17,13 @@ export default class Renderer2D extends Renderer {
 
   constructor(readonly target: HTMLCanvasElement) {
     super(target)
-    this.vp = new Viewport(-10, -10, 20, 20)
+    const vpMin = 2
+    const ratio = this.target.height / this.target.width
+    const w = ratio > 1 ? vpMin : vpMin * (1 / ratio)
+    const h = ratio < 1 ? vpMin : vpMin * ratio
+    const x = -w / 2
+    const y = -h / 2
+    this.vp = new Viewport(x, y, w, h)
   }
 
   render() {
@@ -25,13 +31,37 @@ export default class Renderer2D extends Renderer {
 
     this.ctx.fillStyle = this.clearColor
     this.ctx.fillRect(0, 0, this.target.width, this.target.height)
+    this.ctx.strokeStyle = '#fff'
 
     for (const tile of this.scene.map.tiles) {
       tile.render(this)
     }
   }
 
-  public renderHexagon(x: number, y: number, z: number) {
-    console.log('render hex', x, y, z)
+  public renderHexagon(q: number, r: number, md = 1, rotate = Math.PI / 6) {
+    const center = this.hex2Vp(q, r)
+
+    const verts: [x: number, y: number][] = []
+
+    for (let i = 0; i < 6; i++) {
+      const rad = (i / 6) * Math.PI * 2 + rotate
+      const x = center[0] + (md / 2 / this.vp.w) * Math.sin(rad)
+      const y = center[1] + (md / 2 / this.vp.h) * Math.cos(rad)
+      verts.push([x * this.target.width, y * this.target.height])
+    }
+
+    this.ctx.beginPath()
+    this.ctx.moveTo(verts[5][0], verts[5][1])
+
+    for (let i = 0; i < verts.length; i++)
+      this.ctx.lineTo(verts[i][0], verts[i][1])
+
+    this.ctx.stroke()
+  }
+
+  public hex2Vp(q: number, r: number): [x: number, y: number] {
+    const x = (3 / 2) * q
+    const y = (Math.sqrt(3) / 2) * q + Math.sqrt(3) * r
+    return [x - this.vp.x / this.vp.w, y - this.vp.y / this.vp.h]
   }
 }

@@ -4,6 +4,6 @@ export default class Map {
   public tiles: Tile[]
 
   constructor() {
-    this.tiles = [new Tile(0, 0, 0)]
+    this.tiles = [new Tile(0, 0)]
   }
 }
