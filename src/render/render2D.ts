@@ -72,7 +72,15 @@ export default class Renderer2D extends Renderer {
     this.ctx.stroke()
   }
 
-  public hex2Vp(q: number, r: number): [x: number, y: number] {
+  public zoom(dy: number) {
+    const dz = 1 + dy / 100
+    const center = this.vp.center
+    this.vp.w *= dz
+    this.vp.h *= dz
+    this.vp.center = center
+  }
+
+  private hex2Vp(q: number, r: number): [x: number, y: number] {
     const x = (3 / 2) * q
     const y = (Math.sqrt(3) / 2) * q + Math.sqrt(3) * r
     return [(x - this.vp.x) / this.vp.w, (y - this.vp.y) / this.vp.h]
