@@ -29,6 +29,7 @@ export default class Renderer2D extends Renderer {
     '2d'
   ) as CanvasRenderingContext2D
   private readonly vp: Viewport
+  private renderCoords = false
 
   constructor(readonly target: HTMLCanvasElement, vpMin = 20) {
     super(target)
@@ -42,10 +43,15 @@ export default class Renderer2D extends Renderer {
 
   render() {
     if (!this.scene) return
+    this.renderCoords = config?.renderCoords
 
     this.ctx.fillStyle = this.clearColor
     this.ctx.fillRect(0, 0, this.target.width, this.target.height)
     this.ctx.strokeStyle = '#fff'
+
+    this.ctx.fillStyle = '#fff'
+    this.ctx.font = `${(1 / this.vp.h) * 400}px monospace`
+    this.ctx.textAlign = 'center'
 
     for (const tile of this.scene.map.tiles) {
       tile.render(this)
@@ -70,6 +76,13 @@ export default class Renderer2D extends Renderer {
       this.ctx.lineTo(verts[i][0], verts[i][1])
 
     this.ctx.stroke()
+
+    if (!this.renderCoords) return
+    this.ctx.fillText(
+      `${q} ${r}`,
+      center[0] * this.target.width,
+      center[1] * this.target.height
+    )
   }
 
   public zoom(dy: number) {

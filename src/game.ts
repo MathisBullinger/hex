@@ -9,6 +9,7 @@ export default class Game {
   private interaction: Interaction
 
   constructor() {
+    this.initConfig()
     this.step = this.step.bind(this)
     const canvas = document.getElementById('game') as HTMLCanvasElement
     this.renderer = new Renderer(canvas)
@@ -40,5 +41,12 @@ export default class Game {
         this.renderer.zoom(event.dY)
       }
     }
+  }
+
+  private initConfig() {
+    const config: Config = {
+      renderCoords: false,
+    }
+    ;(window as any).config = config
   }
 }
