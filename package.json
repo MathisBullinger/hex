@@ -1,0 +1,23 @@
+{
+  "name": "hex",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel public/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MathisBullinger/hex.git"
+  },
+  "author": "Mathis Bullinger",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MathisBullinger/hex/issues"
+  },
+  "homepage": "https://github.com/MathisBullinger/hex#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "typescript": "^4.1.3"
+  }
+}
