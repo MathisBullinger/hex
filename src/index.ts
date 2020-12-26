@@ -6,7 +6,7 @@ export default null
 const canvas = document.getElementById('game') as HTMLCanvasElement
 const renderer = new Renderer(canvas)
 
-const map = new Map()
+const map = Map.genRadial(10)
 const scene = new Scene(map)
 renderer.setScene(scene)
 

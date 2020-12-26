@@ -1,10 +1,7 @@
-:root {
-  overscroll-behavior: none;
-  touch-action: none;
-}
-
 body {
   margin: 0;
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 #game {

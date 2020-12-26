@@ -6,6 +6,7 @@ export default abstract class Renderer {
 
   constructor(protected readonly target: HTMLCanvasElement) {
     this.resize()
+    new ResizeObserver(() => this.resize()).observe(target)
   }
 
   public setScene(scene: Scene) {
@@ -16,8 +17,13 @@ export default abstract class Renderer {
 
   public abstract renderHexagon(x: number, y: number, z: number): void
 
-  protected resize() {
-    this.target.width = window.innerWidth * devicePixelRatio
-    this.target.height = window.innerHeight * devicePixelRatio
+  protected resize(): boolean {
+    const width = window.innerWidth * devicePixelRatio
+    const height = window.innerHeight * devicePixelRatio
+    if (width === this.target.width && height === this.target.height)
+      return false
+    this.target.width = width
+    this.target.height = height
+    return true
   }
 }

@@ -7,6 +7,21 @@ class Viewport {
     public w: number,
     public h: number
   ) {}
+
+  get center(): [x: number, y: number] {
+    return [this.x + this.w / 2, this.y + this.h / 2]
+  }
+
+  set center([x, y]: [x: number, y: number]) {
+    this.x = x - this.w / 2
+    this.y = y - this.h / 2
+  }
+
+  fit(ratio: number) {
+    const vpMin = Math.min(this.w, this.h)
+    this.w = ratio > 1 ? vpMin : vpMin * (1 / ratio)
+    this.h = ratio < 1 ? vpMin : vpMin * ratio
+  }
 }
 
 export default class Renderer2D extends Renderer {
@@ -15,9 +30,8 @@ export default class Renderer2D extends Renderer {
   ) as CanvasRenderingContext2D
   private readonly vp: Viewport
 
-  constructor(readonly target: HTMLCanvasElement) {
+  constructor(readonly target: HTMLCanvasElement, vpMin = 20) {
     super(target)
-    const vpMin = 2
     const ratio = this.target.height / this.target.width
     const w = ratio > 1 ? vpMin : vpMin * (1 / ratio)
     const h = ratio < 1 ? vpMin : vpMin * ratio
@@ -40,13 +54,12 @@ export default class Renderer2D extends Renderer {
 
   public renderHexagon(q: number, r: number, md = 1, rotate = Math.PI / 6) {
     const center = this.hex2Vp(q, r)
-
     const verts: [x: number, y: number][] = []
 
     for (let i = 0; i < 6; i++) {
       const rad = (i / 6) * Math.PI * 2 + rotate
-      const x = center[0] + (md / 2 / this.vp.w) * Math.sin(rad)
-      const y = center[1] + (md / 2 / this.vp.h) * Math.cos(rad)
+      const x = center[0] + (md / this.vp.w) * Math.sin(rad)
+      const y = center[1] + (md / this.vp.h) * Math.cos(rad)
       verts.push([x * this.target.width, y * this.target.height])
     }
 
@@ -62,6 +75,16 @@ export default class Renderer2D extends Renderer {
   public hex2Vp(q: number, r: number): [x: number, y: number] {
     const x = (3 / 2) * q
     const y = (Math.sqrt(3) / 2) * q + Math.sqrt(3) * r
-    return [x - this.vp.x / this.vp.w, y - this.vp.y / this.vp.h]
+    return [(x - this.vp.x) / this.vp.w, (y - this.vp.y) / this.vp.h]
+  }
+
+  resize(): boolean {
+    if (!this.vp) return super.resize()
+    if (!super.resize()) return false
+    const center = this.vp.center
+    this.vp.fit(this.target.height / this.target.width)
+    this.vp.center = center
+    this.render()
+    return true
   }
 }
