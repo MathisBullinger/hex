@@ -18,6 +18,7 @@ export default abstract class Renderer {
   public abstract renderHexagon(x: number, y: number, z: number): void
 
   public abstract zoom(dy: number): void
+  public abstract pan(dx: number, dy: number): void
 
   protected resize(): boolean {
     const width = window.innerWidth * devicePixelRatio

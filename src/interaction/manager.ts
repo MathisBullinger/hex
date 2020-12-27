@@ -1,12 +1,23 @@
-import { HexEvent, ZoomEvent } from './events'
+import { HexEvent, ZoomEvent, PanEvent } from './events'
 
 export default class Interaction {
   private events: HexEvent[] = []
 
   constructor(target: HTMLElement) {
     target.addEventListener('wheel', (e) => {
-      const event = this.createEvent(ZoomEvent)
-      event.dY += e.deltaY
+      if (e.ctrlKey) e.preventDefault()
+
+      let zoom = e.ctrlKey
+      if (e.metaKey) zoom = !zoom
+
+      if (zoom) {
+        const event = this.createEvent(ZoomEvent)
+        event.dY += e.deltaY
+      } else {
+        const event = this.createEvent(PanEvent)
+        event.dX += e.deltaX
+        event.dY += e.deltaY
+      }
     })
   }
 

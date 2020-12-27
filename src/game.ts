@@ -1,7 +1,7 @@
 import Renderer from './render/render2D'
 import Scene from './scene'
 import Map from './map'
-import { Interaction, HexEvent, ZoomEvent } from './interaction'
+import { Interaction, HexEvent, ZoomEvent, PanEvent } from './interaction'
 
 export default class Game {
   private running = false
@@ -39,6 +39,11 @@ export default class Game {
     while ((event = this.interaction.getEvent())) {
       if (event instanceof ZoomEvent) {
         this.renderer.zoom(event.dY)
+        continue
+      }
+      if (event instanceof PanEvent) {
+        this.renderer.pan(event.dX, event.dY)
+        continue
       }
     }
   }

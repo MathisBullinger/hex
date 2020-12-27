@@ -17,8 +17,12 @@ class Viewport {
     this.y = y - this.h / 2
   }
 
+  get vpMin() {
+    return Math.min(this.w, this.h)
+  }
+
   fit(ratio: number) {
-    const vpMin = Math.min(this.w, this.h)
+    const vpMin = this.vpMin
     this.w = ratio > 1 ? vpMin : vpMin * (1 / ratio)
     this.h = ratio < 1 ? vpMin : vpMin * ratio
   }
@@ -91,6 +95,12 @@ export default class Renderer2D extends Renderer {
     this.vp.w *= dz
     this.vp.h *= dz
     this.vp.center = center
+  }
+
+  public pan(dx: number, dy: number) {
+    const pm = this.vp.vpMin / 1500
+    this.vp.x += dx * pm
+    this.vp.y += dy * pm
   }
 
   private hex2Vp(q: number, r: number): [x: number, y: number] {
