@@ -17,7 +17,7 @@ export default class Game {
   }
 
   public loadScene() {
-    const map = Map.genRadial(50)
+    const map = Map.genRadial(5)
     const scene = new Scene(map)
     this.renderer.setScene(scene)
   }
@@ -50,7 +50,7 @@ export default class Game {
 
   private initConfig() {
     const config: Config = {
-      renderCoords: false,
+      renderCoords: true,
     }
     ;(window as any).config = config
   }
