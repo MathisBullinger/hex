@@ -1,7 +1,7 @@
-import { HexEvent, ZoomEvent, PanEvent } from './events'
+import * as Event from './events'
 
 export default class Interaction {
-  private events: HexEvent[] = []
+  private events: Event.Base[] = []
 
   constructor(target: HTMLElement) {
     target.addEventListener('wheel', (e) => {
@@ -11,21 +11,29 @@ export default class Interaction {
       if (e.metaKey) zoom = !zoom
 
       if (zoom) {
-        const event = this.createEvent(ZoomEvent)
+        const event = this.createEvent(Event.Zoom)
         event.dY += e.deltaY
       } else {
-        const event = this.createEvent(PanEvent)
+        const event = this.createEvent(Event.Pan)
         event.dX += e.deltaX
         event.dY += e.deltaY
       }
     })
+
+    target.addEventListener('mousemove', (e) => {
+      const event = this.createEvent(Event.MouseMove)
+      event.x = e.clientX
+      event.y = e.clientY
+    })
   }
 
-  public getEvent(): HexEvent {
+  public getEvent(): Event.Base {
     return this.events.splice(0, 1)[0]
   }
 
-  private createEvent<T extends new () => HexEvent>(type: T): InstanceType<T> {
+  private createEvent<T extends new () => Event.Base>(
+    type: T
+  ): InstanceType<T> {
     let event: InstanceType<T> = this.events.find(
       (e) => e instanceof type
     ) as any

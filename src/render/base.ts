@@ -1,4 +1,5 @@
 import type Scene from '../scene'
+import type Tile from '../tile'
 
 export default abstract class Renderer {
   protected scene?: Scene
@@ -14,8 +15,8 @@ export default abstract class Renderer {
   }
 
   public abstract render(): void
-
   public abstract renderHexagon(x: number, y: number, z: number): void
+  public abstract renderTile(tile: Tile): void
 
   public abstract zoom(dy: number): void
   public abstract pan(dx: number, dy: number): void
@@ -29,4 +30,6 @@ export default abstract class Renderer {
     this.target.height = height
     return true
   }
+
+  public abstract pxToTile(x: number, y: number): TileCoords
 }

@@ -1,4 +1,6 @@
 import Renderer from './base'
+import * as hex from '../utils/hexMath'
+import type Tile from '../tile'
 
 class Viewport {
   constructor(
@@ -62,7 +64,13 @@ export default class Renderer2D extends Renderer {
     }
   }
 
-  public renderHexagon(q: number, r: number, md = 1, rotate = Math.PI / 6) {
+  public renderHexagon(
+    q: number,
+    r: number,
+    md = 1,
+    fill: string | undefined = undefined,
+    rotate = Math.PI / 6
+  ) {
     const center = this.hex2Vp(q, r)
     const verts: [x: number, y: number][] = []
 
@@ -76,17 +84,27 @@ export default class Renderer2D extends Renderer {
     this.ctx.beginPath()
     this.ctx.moveTo(verts[5][0], verts[5][1])
 
-    for (let i = 0; i < verts.length; i++)
+    for (let i = 0; i < verts.length - 1; i++)
       this.ctx.lineTo(verts[i][0], verts[i][1])
 
+    this.ctx.closePath()
     this.ctx.stroke()
+    if (fill) {
+      this.ctx.fillStyle = fill
+      this.ctx.fill()
+    }
 
     if (!this.renderCoords) return
+    this.ctx.fillStyle = '#fff'
     this.ctx.fillText(
       `${q} ${r}`,
       center[0] * this.target.width,
       center[1] * this.target.height
     )
+  }
+
+  public renderTile(tile: Tile) {
+    this.renderHexagon(tile.q, tile.r, 1, tile.hovered ? '#888' : undefined)
   }
 
   public zoom(dy: number) {
@@ -107,6 +125,16 @@ export default class Renderer2D extends Renderer {
     const x = (3 / 2) * q
     const y = (Math.sqrt(3) / 2) * q + Math.sqrt(3) * r
     return [(x - this.vp.x) / this.vp.w, (y - this.vp.y) / this.vp.h]
+  }
+
+  public pxToTile(x: number, y: number): TileCoords {
+    x += this.vp.x * (this.target.offsetWidth / this.vp.w)
+    y += this.vp.y * (this.target.offsetHeight / this.vp.h)
+    const q = ((2 / 3) * x) / (this.target.offsetWidth / this.vp.w)
+    const r =
+      ((-1 / 3) * x + (Math.sqrt(3) / 3) * y) /
+      (this.target.offsetHeight / this.vp.h)
+    return hex.cubeRound([q, r, -q - r])
   }
 
   resize(): boolean {

@@ -1,12 +1,14 @@
 import Renderer from './render/render2D'
 import Scene from './scene'
 import Map from './map'
-import { Interaction, HexEvent, ZoomEvent, PanEvent } from './interaction'
+import { Interaction } from './interaction'
+import * as Event from './interaction/events'
 
 export default class Game {
   private running = false
   private renderer: Renderer
   private interaction: Interaction
+  private scene?: Scene
 
   constructor() {
     this.initConfig()
@@ -18,8 +20,8 @@ export default class Game {
 
   public loadScene() {
     const map = Map.genRadial(5)
-    const scene = new Scene(map)
-    this.renderer.setScene(scene)
+    this.scene = new Scene(map)
+    this.renderer.setScene(this.scene)
   }
 
   public start() {
@@ -35,15 +37,18 @@ export default class Game {
   }
 
   private handlEvents() {
-    let event: HexEvent
+    let event: Event.Base
     while ((event = this.interaction.getEvent())) {
-      if (event instanceof ZoomEvent) {
+      if (event instanceof Event.Zoom) {
         this.renderer.zoom(event.dY)
         continue
       }
-      if (event instanceof PanEvent) {
+      if (event instanceof Event.Pan) {
         this.renderer.pan(event.dX, event.dY)
         continue
+      }
+      if (event instanceof Event.MouseMove) {
+        this.scene?.setHovered(...this.renderer.pxToTile(event.x, event.y))
       }
     }
   }

@@ -2,14 +2,16 @@ import RenderObject from './render/object'
 import type Renderer from './render/base'
 
 export default class Tile implements RenderObject {
+  public hovered = false
+
   constructor(
-    private readonly q: number,
-    private readonly r: number,
-    private readonly s = -q - r
+    public readonly q: number,
+    public readonly r: number,
+    public readonly s = -q - r
   ) {}
 
   render(renderer: Renderer) {
-    renderer.renderHexagon(this.q, this.r, 1)
+    renderer.renderTile(this)
   }
 
   get coords(): TileCoords {
